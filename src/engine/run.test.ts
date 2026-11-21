@@ -354,7 +354,8 @@ test('posts the listing says have no comments need no request', async () => {
   ).toEqual(['/r/testsub/comments/z2/busy/']);
 });
 
-describe('going past the 1000-post limit', () => {
+// Simulations of thousands of posts: seconds of real time, more than Vitest's default on CI.
+describe('going past the 1000-post limit', { timeout: 30_000 }, () => {
   // A subreddit whose lists overlap: "new" has posts 0–999, "top" of all time 500–1499, the rest 1000–1999.
   const big: Route = (u) => {
     const m = /^\/svc\/shreddit\/community-more-posts\/(\w+)\/$/.exec(u.pathname);

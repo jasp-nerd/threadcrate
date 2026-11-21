@@ -23,7 +23,8 @@ test.beforeEach(async () => {
   browser = await launchWithExtension({
     headless: !process.env.HEADED,
     args: [
-      `--host-resolver-rules=${HOSTS.map((h) => `MAP ${h} 127.0.0.1:${mock.port}`).join(', ')}`,
+      // Every other host fails to resolve: the mock tests never reach the real internet.
+      `--host-resolver-rules=${HOSTS.map((h) => `MAP ${h} 127.0.0.1:${mock.port}`).join(', ')}, MAP * ~NOTFOUND, EXCLUDE localhost`,
       '--ignore-certificate-errors',
     ],
   });

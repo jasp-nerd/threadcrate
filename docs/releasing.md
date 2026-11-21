@@ -101,3 +101,11 @@ The Edge zip is the Chrome build: `wxt.config.ts` targets `chrome` and `firefox`
 - Renewing the Edge API key before it expires, then rerunning both repos' setup scripts.
 - The version bump, the changelog, the tag, publishing the draft, approving the submission, and answering reviewers.
 - Opera: not listed; Opera installs from the Chrome Web Store (`docs/store/listing.md` section 4).
+
+## Keeping CI healthy
+
+- **pnpm:** the version comes only from `packageManager` in `package.json` (never also from `pnpm/action-setup`'s `version:`, and no Corepack). To move it, run `pnpm self-update 11.x.y` with a release at least a week old, and commit. If the Monday CI run fails with `ERR_PNPM_BROKEN_PNPM_RELEASE`, that pinned release was withdrawn: that command is the whole fix. Dependabot can't bump this field.
+- **Actions** are pinned by commit SHA; Dependabot opens one grouped PR a month (`.github/dependabot.yml`).
+- **Runner image:** all three workflows use the same `ubuntu-26.04`, so a green CI run proves what a release meets. Move them together.
+- **Flaky e2e tests** pass on one retry and show as "flaky" on the run page; fix one that flakes twice in a month. Unit tests run on a fake clock: a red one is a real bug.
+- **Live tests** never run in CI: the `live` Playwright project doesn't exist when `CI` is set.

@@ -4,32 +4,56 @@ on:
   pull_request:
   push:
     branches: [main]
+  # Weekly canary: the repo didn't change, but the world did (a withdrawn pnpm, a new runner image).
+  schedule:
+    - cron: '23 5 * * 1' # Mondays 05:23 UTC, off the hour
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # A new push to a PR replaces its old run; every commit on main keeps its own result.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    # The same image as release.yml and submit.yml, so a green run proves what a release meets.
+    runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # The pnpm version comes from package.json's packageManager, and only from there.
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - id: install
+        run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
-      # typecheck, lint (ESLint and Prettier), unit tests, e2e against the mock reddit.com.
-      - run: pnpm verify
+      # The steps of `pnpm verify` (package.json), one step each: a failure names itself,
+      # and one push shows every problem. Keep the two lists the same.
+      - run: pnpm typecheck
+      - run: pnpm lint
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: pnpm test
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: pnpm e2e
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        timeout-minutes: 10 # a hang fails this step, so the report upload below still runs
       # Permissions are a public contract: a new one disables the extension for existing users.
       - run: pnpm check:manifest
-      - uses: actions/upload-artifact@v7
-        if: failure()
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: ${{ !cancelled() }} # also keeps the traces of tests that only passed on a retry
         with:
           name: playwright-report
           path: |
             playwright-report/
             test-results/
           retention-days: 7
+          if-no-files-found: ignore
