@@ -9,7 +9,7 @@
   "repository": "github:jasp-nerd/threadcrate",
   "bugs": "https://github.com/jasp-nerd/threadcrate/issues",
   "author": "jasp-nerd",
-  "packageManager": "pnpm@11.13.0",
+  "packageManager": "pnpm@11.28.6",
   "engines": {
     "node": ">=22"
   },
