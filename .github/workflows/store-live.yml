@@ -1,0 +1,34 @@
+# Every 12 hours until the Chrome Web Store listing is live; then links it in the README
+# and on the site's data (scripts/store-live.mjs), commits, and switches itself off for good.
+# The server rebuilds the website on its own (scripts/store-watch.sh).
+name: Chrome Web Store listing
+
+on:
+  schedule:
+    - cron: '41 */12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write # the README commit
+  actions: write # switching this workflow off
+
+jobs:
+  check:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - id: store
+        run: echo "state=$(node scripts/store-live.mjs --apply)" >> "$GITHUB_OUTPUT"
+      - if: steps.store.outputs.state == 'live'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -am 'Link the Chrome Web Store listing, now that it is live'
+          git push
+          gh workflow disable store-live.yml
