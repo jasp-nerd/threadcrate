@@ -19,6 +19,9 @@ trap 'rm -rf "$tmp"' EXIT
 git clone -q --depth 1 https://github.com/jasp-nerd/threadcrate.git "$tmp/repo"
 # The listing's link goes in the site's data here too, in case GitHub hasn't committed it yet.
 sed -i "s|chrome: '',|chrome: 'https://chromewebstore.google.com/detail/$ID',|" "$tmp/repo/website/src/data/site.ts"
+# The root tsconfig extends WXT's generated one, which only exists after `wxt prepare`;
+# the website needs no more than a stand-in to read the two extension files it shares.
+mkdir -p "$tmp/repo/.wxt" && echo '{}' > "$tmp/repo/.wxt/tsconfig.json"
 docker run --rm --memory 1g --cpus 1 -v "$tmp/repo:/repo" -w /repo/website node:24-alpine sh -c \
   'npm install -g -s pnpm@11.28.6 && pnpm install -s --frozen-lockfile && SITE_URL=https://threadcrate.jaspnerd.dev BASE_PATH=/ pnpm -s build'
 [ "${DRY:-}" = 1 ] && { ls "$tmp/repo/website/dist" | head; exit 0; }
