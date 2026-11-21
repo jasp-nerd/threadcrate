@@ -9,10 +9,10 @@ The brand alone. Reddit's brand rules ask that "Reddit" isn't part of a product'
 ## Description (shown in GitHub search, and as Google's title: "GitHub - jasp-nerd/threadcrate: …")
 
 ```
-Free Reddit exporter: save threads with their full comment trees, subreddits, profiles and searches to CSV, JSON and Markdown. Chrome extension, no API key, no Python. Cloud and API version: Reddit Scraper on Apify.
+Reddit exporter: save threads with their full comment trees, subreddits, profiles and searches to CSV, JSON and Markdown. Chrome extension, no API key, no Python. Cloud and API version: Reddit Scraper on Apify.
 ```
 
-Why: "Reddit exporter" first, because Google shows the first ~60 characters. "No API key, no Python" answers the most common question since Reddit stopped issuing self-service API keys (11 November 2025): the usual answers on Reddit point to Python tools that need one. The last sentence catches "reddit scraper" searches (about 25× the volume of the exporter phrases) and sends them to the paid cloud version, while the extension itself stays an "exporter".
+Why: "Reddit exporter" first, because Google shows the first ~60 characters. No "free": on GitHub it goes without saying (the website says it). "No API key, no Python" answers the most common question since Reddit stopped issuing self-service API keys (11 November 2025): the usual answers on Reddit point to Python tools that need one. The last sentence catches "reddit scraper" searches (about 25× the volume of the exporter phrases) and sends them to the paid cloud version, while the extension itself stays an "exporter".
 
 ## Website
 
@@ -36,7 +36,7 @@ reddit reddit-exporter reddit-scraper reddit-comments reddit-data subreddit redd
 
 ```sh
 gh repo edit jasp-nerd/threadcrate \
-  --description "Free Reddit exporter: save threads with their full comment trees, subreddits, profiles and searches to CSV, JSON and Markdown. Chrome extension, no API key, no Python. Cloud and API version: Reddit Scraper on Apify." \
+  --description "Reddit exporter: save threads with their full comment trees, subreddits, profiles and searches to CSV, JSON and Markdown. Chrome extension, no API key, no Python. Cloud and API version: Reddit Scraper on Apify." \
   --homepage "https://threadcrate.jaspnerd.dev" \
   $(for t in reddit reddit-exporter reddit-scraper reddit-comments reddit-data subreddit reddit-api-alternative export csv json markdown data-export chrome-extension browser-extension web-scraping apify mcp no-api-key wxt svelte; do printf -- '--add-topic %s ' "$t"; done)
 ```
