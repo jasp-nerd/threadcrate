@@ -1,0 +1,497 @@
+/* Threadcrate's design system: tokens and the component classes every page
+   shares, and the Export button on Reddit (inside a shadow root, hence :host).
+   A sibling of Canvas Course Downloader: the same type, ink and paper. Its one
+   action colour is Reddit's orange-red, so it's plain at a glance that this is a
+   tool for Reddit; the logo is our own (never Reddit's logo or the Snoo). Orange
+   is the button to press, progress, "this one". Sun yellow is for waiting, mint
+   for saved. Sizes are px: on Reddit pages rem would follow Reddit's root font
+   size. */
+
+:root,
+:host {
+  --brand: #d93a00; /* white text 4.6 : 1 */
+  --brand-hover: #c43400;
+  --brand-press: #8f2600;
+  --brand-ink: #b83000; /* text on washes, 5.4 : 1 */
+  --brand-wash: #ffefe8;
+  --brand-pale: #ffd3c2;
+  /* The toolbar icon: Reddit's classic orange, no text on it. */
+  --brand-bright: #ff4500;
+
+  --ink: #14202f;
+  --ink-2: #3f4a5a;
+  --ink-3: #5f6978; /* 5.6 : 1 on white */
+
+  --sun: #ffc43d;
+  --sun-wash: #fff4d6;
+  --sun-ink: #7a5200;
+
+  --mint: #29b36f;
+  --mint-wash: #e1f5ea;
+  --mint-ink: #16704a;
+
+  /* Errors: crimson, far enough from the brand orange to never read as it. */
+  --rose-wash: #fcebf1;
+  --rose-ink: #b0164a;
+
+  --paper: #ffffff;
+  --mist: #f4f6f9;
+  --mist-2: #e9edf2;
+  --line: #e1e6ec;
+  --control: #c6ced8;
+  /* Outlines of checkboxes, radios and switches: 3 : 1 on white. */
+  --control-strong: #8b95a5;
+  --focus: #1a73e8;
+  --shadow: 0 14px 40px rgb(20 32 47 / 14%);
+  /* Strong curves (Emil Kowalski's): the built-in ones feel weak. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+  --font-display: 'Gabarito', 'Figtree', system-ui, sans-serif;
+  --font-ui: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --r-field: 28px;
+  --r-card: 20px;
+  --r-choice: 14px;
+  --r-control: 12px;
+  --r-pill: 999px;
+
+  color-scheme: light;
+}
+
+/* Dark: its own neutrals, not the light ones inverted; the orange gets lighter
+   and takes dark text, so buttons keep their contrast. */
+@media (prefers-color-scheme: dark) {
+  :root,
+  :host {
+    --brand: #ff6a33; /* dark text 5.8 : 1 */
+    --brand-hover: #ff7d4d;
+    --brand-press: #c94a1c;
+    --brand-ink: #ff8a5c;
+    --brand-wash: #3a1d12;
+    --brand-pale: #5a2b19;
+
+    --ink: #e8edf3;
+    --ink-2: #c0c8d3;
+    --ink-3: #97a2b1;
+
+    --sun-wash: #33280c;
+    --sun-ink: #ffd36b;
+    --mint-wash: #0f2e20;
+    --mint-ink: #7ddcaa;
+    --rose-wash: #3a1422;
+    --rose-ink: #ff8fb6;
+
+    --paper: #161d26;
+    --mist: #0e141b;
+    --mist-2: #1f2833;
+    --line: #2a3542;
+    --control: #3c4858;
+    --control-strong: #7e8a9a;
+    --focus: #8ab4f8;
+    --shadow: 0 14px 40px rgb(0 0 0 / 50%);
+
+    color-scheme: dark;
+  }
+}
+
+/* Type */
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 44px;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+.title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.lead {
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  margin: 0;
+}
+.small {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-3);
+  margin: 0;
+}
+.label {
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--ink-2);
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* The logo with the name beside it. */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 750;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.brand-name .descriptor {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  color: var(--ink-3);
+  letter-spacing: 0;
+}
+.brand-name small {
+  display: block;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--ink-3);
+  letter-spacing: 0;
+  margin-top: 3px;
+}
+
+/* Buttons are pills. The primary has a solid lip that a press squashes. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: var(--r-pill);
+  font: 650 15px/1 var(--font-ui);
+  text-decoration: none;
+  white-space: nowrap;
+  border: 0;
+  cursor: pointer;
+  color: var(--ink);
+  background: none;
+  transition:
+    transform 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out),
+    background-color 150ms ease;
+}
+/* A press is heard: everything pressable gives a little. */
+.btn:active:not(:disabled),
+.seg button:active {
+  transform: scale(0.97);
+}
+.btn svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+.btn-primary {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 0 3px 0 var(--brand-press);
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background: var(--brand-hover);
+  }
+  .btn-light:hover {
+    box-shadow: inset 0 0 0 1.5px var(--ink-3);
+  }
+  .btn-text:hover,
+  .link:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .btn-icon:hover {
+    background: var(--mist);
+    color: var(--ink);
+  }
+  .seg button:hover {
+    box-shadow: inset 0 0 0 1.5px var(--control);
+  }
+}
+.btn-primary:active:not(:disabled) {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 0 1px 0 var(--brand-press);
+}
+.btn-dark {
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 0 3px 0 #000;
+}
+.btn-dark:active:not(:disabled) {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 0 1px 0 #000;
+}
+.btn-light {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--control);
+}
+.btn-text {
+  background: none;
+  color: var(--ink-2);
+  padding: 0 6px;
+  height: 36px;
+}
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--ink-2);
+}
+.btn-lg {
+  height: 52px;
+  padding: 0 28px;
+  font-size: 16px;
+}
+.btn-sm {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+.btn-block {
+  width: 100%;
+}
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  background: var(--mist-2);
+  color: var(--ink-3);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+@media (prefers-color-scheme: dark) {
+  .btn-primary {
+    color: #1a0a03;
+  }
+}
+
+/* Text links that read as links. */
+.link {
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* One choice out of a few, each with what it costs: a row of buttons. */
+.seg {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: 6px;
+}
+.seg button {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  min-height: 52px;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: var(--r-choice);
+  background: var(--mist);
+  color: var(--ink);
+  font: 650 15px/1.15 var(--font-ui);
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1.5px transparent;
+  transition:
+    transform 160ms var(--ease-out),
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+.seg button small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.seg button[aria-pressed='true'] {
+  background: var(--brand-wash);
+  color: var(--brand-ink);
+  box-shadow: inset 0 0 0 2px var(--brand);
+}
+.seg button[aria-pressed='true'] small {
+  color: var(--brand-ink);
+}
+
+/* Surfaces step by tone, not by shadow. */
+.card {
+  background: var(--paper);
+  border-radius: var(--r-card);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.well {
+  background: var(--mist);
+  border-radius: var(--r-choice);
+}
+
+/* Chips: a fact about a thing, on a wash. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--r-pill);
+  font: 650 13px/1 var(--font-ui);
+  white-space: nowrap;
+}
+.chip svg {
+  width: 14px;
+  height: 14px;
+}
+.chip-brand {
+  background: var(--brand-wash);
+  color: var(--brand-ink);
+}
+.chip-sun {
+  background: var(--sun-wash);
+  color: var(--sun-ink);
+}
+.chip-mint {
+  background: var(--mint-wash);
+  color: var(--mint-ink);
+}
+.chip-rose {
+  background: var(--rose-wash);
+  color: var(--rose-ink);
+}
+
+/* A note with an icon: something to know, on its wash. */
+.notice {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px 14px;
+  border-radius: var(--r-choice);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.notice svg {
+  width: 20px;
+  height: 20px;
+}
+.notice-info {
+  background: var(--mist);
+  color: var(--ink-2);
+}
+.notice-sun {
+  background: var(--sun-wash);
+  color: var(--sun-ink);
+}
+.notice-rose {
+  background: var(--rose-wash);
+  color: var(--rose-ink);
+}
+
+/* Progress: a thick rounded bar. */
+.bar {
+  display: block;
+  height: 10px;
+  border-radius: var(--r-pill);
+  background: var(--brand-pale);
+  overflow: hidden;
+}
+.bar > i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--brand);
+  /* Grows by transform (no layout work); constant motion is linear. */
+  transform-origin: left;
+  transform: scaleX(var(--p, 0));
+  transition: transform 0.8s linear;
+}
+.bar.waiting > i {
+  background: var(--sun);
+}
+
+/* Icons: one stroke set (Lucide's shapes), sized by the text around them. */
+.i {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.i.ok {
+  color: var(--mint-ink);
+}
+
+:where(button, a, select, input, summary):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* A finished export's result arrives once: a short rise, not a pop. */
+.arrive {
+  transition:
+    opacity 280ms var(--ease-out),
+    transform 280ms var(--ease-out);
+  @starting-style {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .seg button,
+  .bar > i {
+    transition: none;
+  }
+  .btn:active,
+  .seg button:active {
+    transform: none;
+  }
+  .arrive {
+    transition: opacity 200ms ease;
+    @starting-style {
+      opacity: 0;
+      transform: none;
+    }
+  }
+}

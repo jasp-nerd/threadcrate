@@ -1,0 +1,5 @@
+01-popup-subreddit.png: Save Reddit threads and subreddits from the toolbar
+02-export-done.png: A thread with all its comments as CSV, JSON and Markdown, in one ZIP
+03-export-running.png: Keep browsing while it saves, at the pace Reddit allows
+04-welcome.png: Free and open source. Nothing is sent to us or anyone else
+05-settings.png: Choose the files: JSON, CSV, Markdown, and images and videos

@@ -1,0 +1,38 @@
+---
+// The end of an export as the extension shows it (src/entrypoints/export/Receipt.svelte), rebuilt
+// at page size so it stays readable: the invented r/BalconyGardens: top of the month.
+import cheer from '../../../public/kip/cheer.webp';
+
+const files = [
+  ['posts.csv, comments.csv', 'Excel, Google Sheets, pandas'],
+  ['threads/*.md', 'Any text editor, Obsidian, an AI chat'],
+  ['data.json', 'Code, scripts and AI tools'],
+] as const;
+---
+
+<div
+  class="mock"
+  data-ui
+  role="img"
+  aria-label="The receipt at the end of an export: Saved, r/BalconyGardens top of the month, 100 posts and 1,820 comments in one ZIP, with Show in folder, what's inside and what to open each file with"
+>
+  <div class="mock-band mint">
+    <span class="mock-chip"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>Saved</span>
+    <p class="mock-title">r/BalconyGardens: top of the month</p>
+    <p class="mock-meta">100 posts, 1,820 comments. Saved as <code>reddit_r-BalconyGardens_top-month_2026-11-17_1750.zip</code></p>
+    <span class="mock-btn"><svg class="icon" aria-hidden="true"><use href="#i-folder"></use></svg>Show in folder</span>
+    <img class="mock-kip" src={cheer.src} width={cheer.width} height={cheer.height} alt="" loading="lazy" decoding="async" />
+  </div>
+  <div class="mock-cards">
+    <div class="mock-card">
+      <p class="mock-head"><strong>What's inside</strong></p>
+      <p class="mock-row"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><span>Posts</span><b>100</b></p>
+      <p class="mock-row"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><span>Comments</span><b>1,820</b></p>
+      <p class="mock-foot">105 requests to Reddit</p>
+    </div>
+    <div class="mock-card">
+      <p class="mock-head"><strong>Open it with</strong></p>
+      {files.map(([file, app]) => <p class="mock-file"><code>{file}</code><span>{app}</span></p>)}
+    </div>
+  </div>
+</div>

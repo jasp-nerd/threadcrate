@@ -1,0 +1,34 @@
+---
+// The extension's policy comes from PRIVACY.md in the repo, so the store, GitHub and this page
+// always say the same thing. The section about this website is added here.
+import Base from '../layouts/Base.astro';
+import { compiledContent } from '../../../PRIVACY.md';
+import { href } from '../data/site';
+
+// The file links its neighbours in the repo; on the site they're pages.
+const html = (await compiledContent()).replaceAll('href="CHANGELOG.md"', `href="${href('/changelog/')}"`);
+---
+
+<Base
+  title="Privacy – Threadcrate for Reddit"
+  description="What the extension and this website collect: nothing. Threadcrate sends nothing about you or your exports anywhere. Every permission and why it's needed."
+  ogTitle="Privacy policy"
+  current="/privacy/"
+>
+  <section class="wrap narrow page-head">
+    <h1>Privacy policy</h1>
+    <p class="lead">
+      What the extension and this website do with your data. In short: nothing about you or what you
+      export leaves your browser, apart from the requests to Reddit that an export makes.
+    </p>
+  </section>
+  <article class="wrap narrow prose doc">
+    <Fragment set:html={html} />
+    <h2>This website</h2>
+    <p>
+      This website sets no cookies, has no analytics and loads nothing from other sites: its fonts and
+      images come from the same server as the pages. The web server may keep short technical logs,
+      such as IP addresses, for security. They aren't shared with anyone.
+    </p>
+  </article>
+</Base>

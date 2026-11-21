@@ -1,0 +1,527 @@
+---
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import Tree from '../components/Tree.astro';
+import LinkCheck from '../components/LinkCheck.astro';
+import InstallCta from '../components/InstallCta.astro';
+import ReceiptMock from '../components/ReceiptMock.astro';
+import { KINDS } from '../data/kinds';
+import { APIFY, href, LINKS, PRODUCT, STORE } from '../data/site';
+import heroPage from '../assets/shots/hero-page.webp';
+import popup from '../assets/shots/popup-subreddit.webp';
+import running from '../assets/shots/export-running.webp';
+import apifyBanner from '../assets/shots/apify-banner.webp';
+import wave from '../../../public/kip/wave.webp';
+import { version } from '../../../package.json';
+
+const site = Astro.site!;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': new URL('/#website', site).toString(),
+      url: site.toString(),
+      name: PRODUCT,
+      alternateName: ['Threadcrate'],
+      inLanguage: 'en',
+      publisher: { '@id': new URL('/#org', site).toString() },
+    },
+    {
+      '@type': 'Organization',
+      '@id': new URL('/#org', site).toString(),
+      name: PRODUCT,
+      url: site.toString(),
+      logo: new URL(href('/logo-512.png'), site).toString(),
+      description: 'An independent open-source project. Not affiliated with Reddit, Inc.',
+      sameAs: [LINKS.github],
+    },
+    {
+      '@type': 'SoftwareApplication',
+      '@id': new URL('/#app', site).toString(),
+      name: PRODUCT,
+      description:
+        'Browser extension that exports Reddit threads with their comment trees, subreddits, profiles and searches to one ZIP of CSV, JSON and Markdown files, in your own browser.',
+      url: site.toString(),
+      applicationCategory: 'UtilitiesApplication',
+      applicationSubCategory: 'Browser extension',
+      operatingSystem: 'Windows, macOS, Linux, ChromeOS',
+      softwareRequirements: 'Desktop Chrome',
+      softwareVersion: version,
+      releaseNotes: new URL(href('/changelog/'), site).toString(),
+      license: 'https://opensource.org/licenses/MIT',
+      isAccessibleForFree: true,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      ...(STORE.chrome ? { installUrl: STORE.chrome } : {}),
+      sameAs: [LINKS.github],
+    },
+  ],
+};
+
+// The Apify section shows only what's filled in, and nothing at all without a link.
+const apifyFacts = (
+  [
+    ['Free', [APIFY.freeVolume, APIFY.freeComments].filter(Boolean).join(', ')],
+    ['Price', APIFY.price],
+  ] as const
+).filter(([, value]) => value);
+const apifyPrint = [
+  APIFY.freeNote,
+  APIFY.benchmark && `Benchmark: ${APIFY.benchmark}.`,
+  APIFY.pricesAsOf && `Prices as of ${APIFY.pricesAsOf}.`,
+  'Apify is a separate service with its own terms; the link opens its site.',
+].filter(Boolean);
+
+---
+
+<Base
+  title="Threadcrate for Reddit – export Reddit threads, comments and subreddits to CSV, JSON and Markdown"
+  description="Free, open-source browser extension that exports a Reddit thread with its whole comment tree, a subreddit, a profile or a search to one ZIP of CSV, JSON and Markdown. No account, no API key."
+  ogTitle="Keep the whole Reddit thread"
+  jsonLd={jsonLd}
+>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap hero-grid">
+      <div class="hero-text">
+        <h1 id="hero-title">Keep the whole Reddit thread</h1>
+        <p class="lead">
+          A free browser extension that exports a thread with its whole comment tree, a subreddit, a
+          profile or a search to one ZIP: CSV for spreadsheets, JSON for code and Markdown to read.
+        </p>
+        <div class="cta-row">
+          <InstallCta large github />
+        </div>
+        {
+          APIFY.url && (
+            <p class="cloud-note">
+              Rather run it in the cloud or from code?{' '}
+              <a href={APIFY.url}>Reddit Scraper on Apify →</a>
+            </p>
+          )
+        }
+        <p class="trust">
+          <strong>Free and open source</strong>, no account or API key, nothing sent to us. Not
+          affiliated with Reddit, Inc.
+        </p>
+      </div>
+
+      <div class="stage-col">
+        <div class="stage carded" data-stage data-ui>
+          <div class="window">
+            <div class="window-bar" aria-hidden="true">
+              <i></i><span>reddit.com/r/BalconyGardens/top/?t=month</span>
+              <b class="tile"><Logo /></b>
+            </div>
+            <div class="window-page">
+              <img
+                src={heroPage.src}
+                width={heroPage.width}
+                height={heroPage.height}
+                fetchpriority="high"
+                alt="An invented subreddit, r/BalconyGardens, with the Threadcrate popup open from the toolbar: 100 posts, the top comments of each, and an Export 100 posts button"
+              />
+              <button class="target" type="button" aria-label="Export 100 posts (play the demo)"></button>
+            </div>
+            <svg class="cursor" viewBox="0 0 28 28" aria-hidden="true"
+              ><path d="M5 3l17 9.5-7.6 1.7L10.8 21z" fill="#14202f" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"></path></svg
+            >
+            <div class="export-card shown done" aria-hidden="true">
+              <div class="export-top">
+                <Logo class="ring" ring="hero" />
+                <div>
+                  <div class="pct" data-pct>100%</div>
+                  <div class="export-name">r/BalconyGardens: top of the month</div>
+                  <div class="export-count" data-count>100 posts, 1,820 comments, in one ZIP</div>
+                </div>
+              </div>
+              <div class="progress"><i data-bar style="width: 100%"></i></div>
+              <ul class="saved-list" data-recent>
+                <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><span>posts.csv and comments.csv</span></li>
+                <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><span>A Markdown file per thread</span></li>
+                <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><span>data.json, with every comment tree</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <button class="replay" type="button" data-replay hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-replay"></use></svg>Play the demo again
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section after-hero" id="pages" aria-labelledby="pages-title">
+    <div class="wrap deadline-grid">
+      <div class="text-col rise">
+        <h2 id="pages-title">Any thread, subreddit, profile or search</h2>
+        <p class="lead">
+          Reddit closed most of its free API in 2026, and many export tools stopped working.
+          Threadcrate reads the same pages reddit.com shows you, so it works logged out. Logged in, it
+          uses Reddit's API too, each within its own limit.
+        </p>
+        <a class="link-plain" href={href('/how-to-export-reddit-to-csv/')}
+          >Every way to export Reddit to CSV<svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></a
+        >
+      </div>
+      <div class="rise"><LinkCheck /></div>
+    </div>
+  </section>
+
+  <section class="section tight-top" id="how" aria-labelledby="how-title">
+    <div class="wrap split">
+      <div class="text-col rise">
+        <h2 id="how-title">Three steps, then keep browsing</h2>
+        <ol class="steps">
+          <li>
+            <strong>Open a page on reddit.com.</strong>
+            <span>A post, a subreddit, a profile or a search.</span>
+          </li>
+          <li>
+            <strong>Click Threadcrate in the toolbar.</strong>
+            <span
+              >Pin it first, from the puzzle-piece menu. On a post, Export also sits next to Share; on a
+              subreddit, next to Join. <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd> works too.</span
+            >
+          </li>
+          <li>
+            <strong>Pick how much, then press Export.</strong>
+            <span>How many posts and comments, each with how long it takes.</span>
+          </li>
+        </ol>
+        <p class="muted">
+          The export runs in its own tab. A notification tells you when it's done, and the receipt has
+          Show in folder.
+        </p>
+      </div>
+      <figure class="shot popup rise">
+        <img
+          src={popup.src}
+          width={popup.width}
+          height={popup.height}
+          loading="lazy"
+          decoding="async"
+          alt="The Threadcrate popup on r/BalconyGardens, top of the month: posts 25, 100 or All, comments per post None, Top or All, each with its time, and Export 100 posts"
+        />
+      </figure>
+    </div>
+  </section>
+
+  {
+    APIFY.url && (
+      <section class="section api" id="api" aria-labelledby="api-title">
+        <div class="wrap api-wrap">
+          <div class="api-head rise">
+            <span class="api-label">From the maker of Threadcrate</span>
+            <h2 id="api-title">Want it in the cloud, or for your code and AI agents?</h2>
+            <p class="lead">
+              Reddit Scraper on Apify does what Threadcrate does, on a server: no tab to keep open, 100
+              posts in 3.4 seconds, and {APIFY.freeVolume}.
+            </p>
+          </div>
+          <a class="api-banner rise" href={APIFY.url} tabindex="-1" aria-hidden="true">
+            <img src={apifyBanner.src} width={apifyBanner.width} height={apifyBanner.height} loading="lazy" decoding="async" alt="" />
+          </a>
+          <ul class="api-cols rise">
+            <li>
+              <h3>No code</h3>
+              <p>Paste a subreddit, post, search or user, click Start, and export to Excel, CSV or JSON.</p>
+            </li>
+            <li>
+              <h3>Your AI agent</h3>
+              <p>One line, for Claude Code:</p>
+              <code class="api-cmd">{APIFY.mcp}</code>
+            </li>
+            <li>
+              <h3>Your code</h3>
+              <p>One API call. About $0.34 for 100 posts with 5 comments each.</p>
+            </li>
+          </ul>
+          <div class="api-foot rise">
+            <div class="cta-row">
+              <a class="btn btn-primary btn-lg" href={APIFY.url}>
+                Try it free on Apify<svg class="icon" aria-hidden="true"><use href="#i-external" /></svg>
+              </a>
+              <span class="cta-note">Threadcrate stays free and runs only in your browser.</span>
+            </div>
+            {apifyFacts.length > 0 && (
+              <dl class="api-facts">
+                {apifyFacts.map(([label, value]) => (
+                  <div>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            <p class="api-print">{apifyPrint.join(' ')}</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section everything" id="everything" aria-labelledby="everything-title" data-everything>
+    <div class="wrap ev-grid">
+      <div class="ev-text">
+        <h2 id="everything-title">One ZIP, every format</h2>
+        <p class="lead">
+          Spreadsheets get CSV, code gets JSON with comment trees nested under their posts, and people
+          get a Markdown file per thread. Field names follow Reddit's own and times are UTC. Pick a page:
+        </p>
+        <fieldset class="kinds">
+          <legend class="sr-only">Kind of export</legend>
+          {
+            KINDS.map((k, i) => (
+              <label class="kind">
+                <input type="radio" name="kind" value={k.id} checked={i === 0} />
+                <span>{k.label}</span>
+              </label>
+            ))
+          }
+        </fieldset>
+        {KINDS.map((k, i) => <p class="kind-desc" data-kind={k.id} hidden={i !== 0}>{k.text}</p>)}
+        <div class="ev-ring" aria-hidden="true">
+          <Logo class="ring" ring="everything" />
+          <p class="ev-status"><span data-ev-pct>Saved</span><small>Sample export, invented content</small></p>
+        </div>
+      </div>
+      <div class="tree-panel" data-ui>
+        <div class="tree-bar" aria-hidden="true">
+          <Logo class="ring" ring="everything" />
+          <span data-ev-pct>Saved</span>
+        </div>
+        {
+          KINDS.map((k, i) => (
+            <div class="tree" data-tree data-kind={k.id} hidden={i !== 0}>
+              <p class="tree-title">
+                <svg class="icon" aria-hidden="true">
+                  <use href="#i-zip" />
+                </svg>
+                <span>{k.zip}</span>
+              </p>
+              <Tree nodes={k.tree} />
+              {k.foot && <p class="tree-foot">{k.foot}</p>}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="receipt" aria-labelledby="receipt-title">
+    <div class="wrap split flip">
+      <div class="rise"><ReceiptMock /></div>
+      <div class="text-col receipt-text rise">
+        <h2 id="receipt-title">Nothing goes missing quietly</h2>
+        <p class="lead">
+          Every export ends with a receipt: what's inside, what opens each file, and if part of a
+          thread couldn't be loaded, what and why.
+        </p>
+        <p class="muted">
+          Reddit's comment counts include removed comments it no longer shows anyone, so an export can
+          have fewer comments than the number on the post. Deleted and removed comments stay in as{' '}
+          <code>[deleted]</code> and <code>[removed]</code>, so replies keep their place, and{' '}
+          <code>manifest.json</code> lists every gap with its reason.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight-top" id="pace" aria-labelledby="pace-title">
+    <div class="wrap split">
+      <div class="text-col rise">
+        <h2 id="pace-title">At the pace Reddit allows</h2>
+        <p class="lead">
+          Reddit's request limit sets the speed, so the export tells you how long before you start,
+          and while it runs, what it's doing and how long is left.
+        </p>
+        <ul class="facts">
+          <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><span>Follows Reddit's rate-limit headers and always leaves a reserve, so your own Reddit tabs keep working.</span></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><span>When Reddit asks it to wait, it says so and counts down.</span></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><span>The ring of stitches on the toolbar icon fills as it goes.</span></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg><span>Stop and save keeps everything loaded so far.</span></li>
+        </ul>
+      </div>
+      <figure class="shot crop rise">
+        <img
+          src={running.src}
+          width={running.width}
+          height={running.height}
+          loading="lazy"
+          decoding="async"
+          alt="The export tab at 37%: r/BalconyGardens top of the month, about a minute left, post 35 of 100, 616 comments so far, with Kip the otter carrying a box"
+        />
+      </figure>
+    </div>
+  </section>
+
+  <section class="section field-sun" id="who" aria-labelledby="who-title">
+    <div class="wrap who-grid">
+      <div class="text-col rise">
+        <h2 id="who-title">For people who need the conversation</h2>
+        <p class="lead">
+          Posts get deleted, threads get locked and communities go private. An export is a copy you
+          can keep, search and work with.
+        </p>
+        <p class="small">
+          Export what you have a right to keep, and respect Reddit's{' '}
+          <a href="https://redditinc.com/policies/user-agreement">User Agreement</a> and the people who
+          wrote the comments.
+        </p>
+      </div>
+      <ul class="people rise">
+        <li>
+          <h3>Researchers</h3>
+          <p><code>comments.csv</code> keeps <code>parent_id</code>, <code>depth</code> and <code>path</code>, so a thread's shape survives in pandas or R.</p>
+        </li>
+        <li>
+          <h3>Students</h3>
+          <p>The threads you cite, as Markdown you can quote from, with the time you exported them.</p>
+        </li>
+        <li>
+          <h3>Archivists</h3>
+          <p>A community's top posts with their comments, and their images and videos if you want them.</p>
+        </li>
+        <li>
+          <h3>Moderators</h3>
+          <p>A record of threads in your own community, removed comments kept in place as <code>[removed]</code>.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section privacy" id="privacy" aria-labelledby="privacy-title">
+    <div class="wrap privacy-grid">
+      <div class="text-col rise">
+        <h2 id="privacy-title">Your exports stay with you</h2>
+        <ul class="promises">
+          <li>
+            <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+            <div><strong>Nothing is sent to us</strong><span>No server, no analytics, no tracking. Nothing about you or what you export goes to the developer or anyone else.</span></div>
+          </li>
+          <li>
+            <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+            <div><strong>It talks only to Reddit</strong><span>www.reddit.com, Reddit's media hosts (redd.it) and, for images linked in posts, i.imgur.com.</span></div>
+          </li>
+          <li>
+            <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+            <div><strong>Your login stays yours</strong><span>It never asks for your password and never reads your login cookies or tokens.</span></div>
+          </li>
+          <li>
+            <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+            <div><strong>It only reads</strong><span>It never posts, votes or changes anything on Reddit.</span></div>
+          </li>
+        </ul>
+        <div class="cta-row">
+          <a class="btn on-navy" href={LINKS.github}><svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg>Read the code</a>
+          <a class="link-plain on-dark" href={href('/privacy/')}>Privacy policy</a>
+        </div>
+      </div>
+      <div class="asks rise">
+        <h3>What it asks for, and why</h3>
+        <p>Four permissions, kept to what an export needs.</p>
+        <dl>
+          <div>
+            <dt>Your data on reddit.com, redd.it and i.imgur.com</dt>
+            <dd>To add the Export button, read the pages you export, and download their images and videos when you ask for them.</dd>
+          </div>
+          <div>
+            <dt>Manage your downloads</dt>
+            <dd>To save the ZIP, and to show it in its folder.</dd>
+          </div>
+          <div>
+            <dt>Display notifications</dt>
+            <dd>To tell you when an export running in a background tab is done.</dd>
+          </div>
+          <div>
+            <dt>Storage</dt>
+            <dd>To remember your choices and show a running export in the popup. Chrome doesn't ask about this one.</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="maker" aria-labelledby="maker-title">
+    <div class="wrap people-grid">
+      <div class="text-col rise">
+        <h2 id="maker-title">Made in the open</h2>
+        <p class="lead">
+          Free and open source under the MIT license: no paid tier, no limits we invented. The code, the
+          changelog and the known limitations are on GitHub.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-light" href={LINKS.github}><svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg>GitHub</a>
+          <a class="link-plain" href={href('/changelog/')}>Changelog<svg class="icon" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+        </div>
+      </div>
+      <div class="maker rise">
+        <div class="maker-top">
+          <img src={wave.src} width={wave.width} height={wave.height} loading="lazy" alt="Kip, the extension's otter, waving" />
+          <div>
+            <h3>Hi, I'm Kip</h3>
+            <p class="small muted">I pack Reddit threads into tidy files.</p>
+          </div>
+        </div>
+        <p>
+          Threadcrate is made by Jasper in Amsterdam, who also makes Canvas Course Downloader. Same rules
+          for both: free, no account, nothing sent to us.
+        </p>
+        <div class="row">
+          <a class="btn btn-light" href={LINKS.sibling}>Canvas Course Downloader</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="faq" aria-labelledby="faq-title" style="background: var(--mist)">
+    <div class="wrap">
+      <h2 id="faq-title" class="rise">Questions people ask</h2>
+      <div class="faq">
+        <div><h3>Is it free?</h3><p>Yes. No account, no paid version of the extension, open source under the MIT license. While an export runs, a small card from the maker suggests the paid cloud version; you can switch it off in Settings.</p></div>
+        <div>
+          <h3>Do I need a Reddit account or an API key?</h3>
+          <p>No. It reads the pages your browser can already open, so it works logged out. Logged in, threads also come through Reddit's API, which has its own allowance. Profiles need you logged in.</p>
+        </div>
+        <div>
+          <h3>Why does my export have fewer comments than the post says?</h3>
+          <p>Reddit's count includes removed and deleted comments it no longer shows anyone. Threadcrate opens every "load more" and "continue this thread", and <code>manifest.json</code> lists anything that still couldn't be loaded, and why.</p>
+        </div>
+        <div>
+          <h3>Can it get more than 1,000 posts from a subreddit?</h3>
+          <p>Reddit lists about 1,000 posts per list. With the setting on, an All export reads eight lists (newest, top and controversial over several time ranges, and hot) and keeps each post once. That finds several thousand posts in a big subreddit, but not every old one.</p>
+        </div>
+        <div>
+          <h3>How long does an export take?</h3>
+          <p>It depends mostly on the comments. The popup shows the time for each choice before you start. Top comments take one request per post; All follows every reply, and a big thread can take hundreds of requests. In a test on 16 November 2026, a 741-comment thread took 2 minutes 9 seconds.</p>
+        </div>
+        <div>
+          <h3>Does it save images and videos?</h3>
+          <p>When you turn them on. Up to 300 MB per file and 1.5 GB per export, because the ZIP is built in memory; anything beyond that is listed in <code>manifest.json</code>. Logged in, Reddit serves a video's picture and sound as two files.</p>
+        </div>
+        <div>
+          <h3>Which browsers?</h3>
+          <p>{STORE.chrome ? 'Chrome on a laptop or desktop, from the Chrome Web Store.' : "Chrome on a laptop or desktop. It's coming soon to the Chrome Web Store."} Phones aren't supported.</p>
+        </div>
+        <div>
+          <h3>Is it allowed?</h3>
+          <p>It reads only what your browser can already open, at the pace Reddit allows. Export what you have a right to keep: your own posts, threads you take part in, research data you'll handle with care.</p>
+        </div>
+        <div><h3>How do I remove it?</h3><p>Right-click its icon in the toolbar and choose Remove from Chrome. Your exports stay in your Downloads folder.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="closing-title">
+    <div class="wrap closing">
+      <h2 id="closing-title">Keep the threads you care about</h2>
+      <div class="cta-row"><InstallCta large github /></div>
+      <p class="cta-note">Free and open source, for Chrome on a computer.</p>
+    </div>
+  </section>
+
+  <script>
+    import '../scripts/landing';
+  </script>
+</Base>

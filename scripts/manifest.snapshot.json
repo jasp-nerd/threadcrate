@@ -1,0 +1,40 @@
+{
+  "chrome-mv3": {
+    "manifest_version": 3,
+    "permissions": ["downloads", "notifications", "storage"],
+    "host_permissions": [
+      "https://*.redd.it/*",
+      "https://i.imgur.com/*",
+      "https://www.reddit.com/*"
+    ],
+    "optional_permissions": [],
+    "optional_host_permissions": [],
+    "content_script_matches": [
+      "https://new.reddit.com/*",
+      "https://old.reddit.com/*",
+      "https://sh.reddit.com/*",
+      "https://www.reddit.com/*"
+    ],
+    "gecko_id": null,
+    "data_collection": null
+  },
+  "firefox-mv3": {
+    "manifest_version": 3,
+    "permissions": ["downloads", "notifications", "storage"],
+    "host_permissions": [
+      "https://*.redd.it/*",
+      "https://i.imgur.com/*",
+      "https://www.reddit.com/*"
+    ],
+    "optional_permissions": [],
+    "optional_host_permissions": [],
+    "content_script_matches": [
+      "https://new.reddit.com/*",
+      "https://old.reddit.com/*",
+      "https://sh.reddit.com/*",
+      "https://www.reddit.com/*"
+    ],
+    "gecko_id": "threadcrate@jasp-nerd",
+    "data_collection": { "required": ["none"] }
+  }
+}

@@ -1,0 +1,30 @@
+---
+// The logo from the extension's own geometry (src/ui/logo.ts): a ring of stitches around an
+// arrow dropping into a crate. The first `filled` stitches are "on" (orange), the rest pale, so
+// the same mark doubles as the progress ring the export page shows (the page script fills it).
+import { arrowPath, geometryFor, LOGO_SIZE, stitchPath } from '../../../src/ui/logo';
+
+interface Props {
+  class?: string;
+  filled?: number;
+  label?: string;
+  ring?: string;
+}
+const g = geometryFor(LOGO_SIZE);
+const { class: className = '', filled = g.stitches, label, ring } = Astro.props;
+const stitches = Array.from({ length: g.stitches }, (_, i) => stitchPath(g, i));
+---
+
+<svg
+  class:list={['logo', className]}
+  viewBox={`0 0 ${LOGO_SIZE} ${LOGO_SIZE}`}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  data-ring={ring}
+>
+  <g fill="none" stroke-width={g.weight} stroke-linecap="round" stroke-linejoin="round">
+    {stitches.map((d, i) => <path class:list={['dot', { on: i < filled }]} d={d} />)}
+    <path class="arrow" d={arrowPath(g)} />
+  </g>
+</svg>

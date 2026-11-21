@@ -1,0 +1,40 @@
+name: Something went wrong
+description: An export failed, missed comments, or the extension behaved oddly.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you exported, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Reddit page
+      description: The address of the page you exported, if it's public.
+  - type: textarea
+    id: manifest
+    attributes:
+      label: What did the export say?
+      description: The error on the export page, or the "incomplete" part of manifest.json in the ZIP.
+  - type: dropdown
+    id: logged-in
+    attributes:
+      label: Were you logged in to Reddit?
+      options: ['Yes', 'No', 'Not sure']
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Extension version
+      description: Shown at the top of the export page.
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options: [Chrome, Edge, Brave, Firefox, Other]
+    validations:
+      required: true

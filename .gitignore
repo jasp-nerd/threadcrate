@@ -1,0 +1,24 @@
+.DS_Store
+*.zip
+*.crx
+*.pem
+node_modules/
+.output/
+.wxt/
+web-ext.config.ts
+test-results/
+playwright-report/
+.context/
+.claude/
+.env
+.env.*
+# Live-test browser profile and captured pages: real Reddit content stays local
+e2e/live/.profile*/
+e2e/live/out/
+e2e/.certs/
+media/screens/
+media/store/.build/
+# Website build output (website/ is its own pnpm project)
+website/dist/
+website/.astro/
+website/node_modules/

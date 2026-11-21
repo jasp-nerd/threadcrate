@@ -1,0 +1,43 @@
+// An invented post with every field of the export model, for tests that need a whole one.
+import type { Post } from '../../src/reddit/model';
+
+export function makePost(overrides: Partial<Post> = {}): Post {
+  return {
+    kind: 'post',
+    id: 'p1',
+    name: 't3_p1',
+    subreddit: 'testsub',
+    subreddit_id: 't5_x',
+    author: 'op',
+    author_fullname: null,
+    title: 'An invented post',
+    selftext: 'text',
+    selftext_html: null,
+    url: 'https://www.reddit.com/r/testsub/comments/p1/x/',
+    domain: 'self.testsub',
+    permalink: 'https://www.reddit.com/r/testsub/comments/p1/x/',
+    created_utc: '2026-11-15T08:00:00.000Z',
+    created_unix: 1_794_729_600,
+    edited_utc: null,
+    score: 3,
+    upvote_ratio: 1,
+    num_comments: 3,
+    link_flair_text: null,
+    author_flair_text: null,
+    over_18: false,
+    spoiler: false,
+    locked: false,
+    stickied: false,
+    archived: false,
+    is_self: true,
+    distinguished: null,
+    removal_status: null,
+    media_type: 'text',
+    media: [],
+    thumbnail: null,
+    poll: null,
+    crosspost_parent: null,
+    crosspost: null,
+    ...overrides,
+  };
+}

@@ -1,0 +1,5 @@
+01-thread.png: Save Reddit threads and subreddits from the toolbar
+02-receipt.png: A thread with all its comments as CSV, JSON and Markdown, in one ZIP
+03-subreddit.png: Whole subreddits, even past Reddit's 1,000-post limit
+04-progress.png: Keep browsing while it saves, at the pace Reddit allows
+05-private.png: Free and open source. Nothing is sent to us or anyone else

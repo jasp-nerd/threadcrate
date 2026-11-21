@@ -1,0 +1,11 @@
+name: Idea
+description: Something the extension should export, or do differently.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What would you like?
+      description: What you're trying to do, and what's in the way today.
+    validations:
+      required: true

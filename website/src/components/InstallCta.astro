@@ -1,0 +1,37 @@
+---
+// The install button. With a Chrome Web Store listing: "Add to Chrome" on a computer, and an
+// email with the link on a phone. Without one (STORE.chrome is empty): a plain note that it's
+// coming, which links nowhere, and optionally the code on GitHub beside it.
+import { LINKS, mailToSelf, STORE } from '../data/site';
+
+interface Props {
+  large?: boolean;
+  /** Show "See the code on GitHub" next to the note while there's no listing. */
+  github?: boolean;
+}
+const { large = false, github = false } = Astro.props;
+---
+
+{
+  STORE.chrome ? (
+    <>
+      <a class:list={['btn btn-primary only-desktop', { 'btn-lg': large }]} href={STORE.chrome}>
+        <svg class="icon" aria-hidden="true"><use href="#i-chrome" /></svg>Add to Chrome
+      </a>
+      <a class:list={['btn btn-primary only-phone', { 'btn-lg': large }]} href={mailToSelf(Astro.site!)}>
+        Email myself the link
+      </a>
+    </>
+  ) : (
+    <>
+      <p class:list={['soon', { 'soon-lg': large }]}>
+        <svg class="icon" aria-hidden="true"><use href="#i-chrome" /></svg>Coming soon to the Chrome Web Store
+      </p>
+      {github && (
+        <a class="link-plain" href={LINKS.github}>
+          See the code on GitHub<svg class="icon" aria-hidden="true"><use href="#i-arrow" /></svg>
+        </a>
+      )}
+    </>
+  )
+}

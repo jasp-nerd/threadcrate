@@ -1,0 +1,4 @@
+pnpm-lock.yaml
+*.md
+# A separate project with its own tooling: the website (Astro).
+website/

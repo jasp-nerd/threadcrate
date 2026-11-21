@@ -1,0 +1,76 @@
+---
+// "What would it export?": paste a Reddit link, see what Threadcrate makes of it. It runs the
+// extension's own parser (src/reddit/target.ts) in the page, so the answer is what the extension
+// does; nothing is sent anywhere. Served showing the example's answer, which reads fine without
+// JavaScript. One per page: the ids below are fixed.
+import { describeTarget, parseTarget } from '../../../src/reddit/target';
+import { answer, EXAMPLE } from '../data/link-check';
+
+const first = answer(EXAMPLE, parseTarget(EXAMPLE), describeTarget);
+---
+
+<div class="closer" data-check>
+  <h3 id="check-title">What would it export?</h3>
+  <div class="picker">
+    <label class="sr-only" for="check-url">A Reddit link</label>
+    <div class="picker-field">
+      <svg class="icon picker-search" aria-hidden="true"><use href="#i-link"></use></svg>
+      <!-- Read-only until the script runs. -->
+      <input
+        id="check-url"
+        type="url"
+        inputmode="url"
+        aria-describedby="check-title"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        enterkeyhint="done"
+        placeholder="Paste a Reddit link"
+        value={EXAMPLE}
+        readonly
+        data-input
+      />
+    </div>
+  </div>
+  <div class="result" data-result>
+    <span class="ends" data-r-kind>{first.kind}</span>
+    <span class="school" data-r-what>{first.what}</span>
+    <p data-r-text>{first.text}</p>
+    <p data-r-how>{first.how}</p>
+  </div>
+  <p class="closer-note">
+    Checked in this page with the extension's own code. The link isn't sent anywhere.
+  </p>
+</div>
+
+<script>
+  import { describeTarget, parseTarget } from '../../../src/reddit/target';
+  import { answer } from '../data/link-check';
+
+  const root = document.querySelector<HTMLElement>('[data-check]');
+  if (root) {
+    const input = root.querySelector<HTMLInputElement>('[data-input]')!;
+    const result = root.querySelector<HTMLElement>('[data-result]')!;
+    const show = () => {
+      const raw = input.value.trim();
+      // People paste links without https://, or with spaces around them.
+      const url = raw && !/^[a-z]+:\/\//i.test(raw) ? `https://${raw}` : raw;
+      let target = null;
+      try {
+        target = url ? parseTarget(url) : null;
+      } catch {
+        target = null;
+      }
+      const a = answer(url, target, describeTarget);
+      result.querySelector('[data-r-kind]')!.textContent = a.kind;
+      result.querySelector('[data-r-what]')!.textContent = a.what;
+      result.querySelector('[data-r-text]')!.textContent = a.text;
+      result.querySelector('[data-r-how]')!.textContent = a.how;
+      result.classList.toggle('no', !target);
+    };
+    input.readOnly = false;
+    input.addEventListener('input', show);
+    input.addEventListener('focus', () => requestAnimationFrame(() => input.select()));
+    result.setAttribute('aria-live', 'polite');
+  }
+</script>

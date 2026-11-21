@@ -1,0 +1,36 @@
+---
+// A ZIP's contents from data/kinds.ts. Rows carry `data-row` so the page script can reveal them in order.
+import type { Node } from '../data/kinds';
+
+interface Props {
+  nodes: Node[];
+}
+const { nodes } = Astro.props;
+
+// Export file names are long and have no spaces, so on a narrow screen they lose their middle
+// and keep their end: "BalconyGardens_bg2v_first-harv…this-year.md".
+function split(name: string): [string, string] {
+  if (name.length <= 24) return [name, ''];
+  return [name.slice(0, -14), name.slice(-14)];
+}
+---
+
+<ul>
+  {
+    nodes.map((n) => (
+      <li class:list={{ folder: !!n.children }}>
+        <span class:list={['row', { more: /^(\d+ )?more /.test(n.name) || /^\d+ more$/.test(n.name) }]} data-row>
+          <svg class="icon" aria-hidden="true">
+            <use href={n.children ? '#i-folder' : '#i-file'} />
+          </svg>
+          <span class="name">
+            <span class="head">{split(n.name)[0]}</span>
+            {split(n.name)[1] && <span class="tail">{split(n.name)[1]}</span>}
+          </span>
+          {n.note && <span class="note">{n.note}</span>}
+        </span>
+        {n.children && <Astro.self nodes={n.children} />}
+      </li>
+    ))
+  }
+</ul>

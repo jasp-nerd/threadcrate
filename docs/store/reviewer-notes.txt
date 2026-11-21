@@ -1,0 +1,12 @@
+Threadcrate for Reddit exports the Reddit page the user is on (a post with its comments, a subreddit, a search, or a user's posts and comments) to one ZIP of JSON, CSV and Markdown in the user's Downloads folder. Every export starts with a click by the user.
+
+Building from source: SOURCE_CODE_REVIEW.md is at the root of the source package. In short, with Node 22 or later and pnpm 11.13.0:
+  pnpm install --frozen-lockfile
+  pnpm build:firefox
+The output in .output/firefox-mv3/ is identical to the uploaded package. Our release workflow rebuilds it from this exact source package, without git, and compares the two folders before anything is uploaded. WXT (Vite and Rolldown) bundles and minifies the TypeScript and Svelte in src/. Third-party code is exactly the "dependencies" in package.json: Svelte, client-zip, turndown, @joplin/turndown-plugin-gfm and @webext-core/messaging. No eval, no remote code.
+
+Network: only www.reddit.com (the pages being exported), *.redd.it and i.imgur.com (images and videos in those posts, only when the user turns media on). Requests to Reddit are paced by Reddit's own x-ratelimit headers, at most one at a time per Reddit rate limit, and always leave part of the allowance unused (src/reddit/pacing.ts, src/reddit/client.ts). Requests to www.reddit.com are made by the content script in a www.reddit.com tab as ordinary same-origin requests: src/entrypoints/reddit.content/relay.ts allows only GET and the "more replies" POST that reddit.com's own page makes. If no reddit.com tab is open, the export opens one in the background. The extension never reads cookies or tokens and never logs in for the user. It sends nothing to us or anyone else (data_collection_permissions: none).
+
+Reddit content is handled as data: pages are parsed with DOMParser in the export page and written to files as text, never rendered as HTML in extension pages.
+
+To test: no Reddit account is needed. Open a public post or subreddit on www.reddit.com, click the Threadcrate toolbar button (or Export next to Share on a post, or Alt+Shift+E), and press Export. Firefox asks for access to Reddit on first use; the export page has a button for it. Logged out, it reads Reddit's web pages; logged in, it also uses Reddit's .json pages. The public repository (https://github.com/jasp-nerd/threadcrate) has a mock reddit.com used by the end-to-end tests (e2e/mock/).

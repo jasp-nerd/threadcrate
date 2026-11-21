@@ -1,0 +1,282 @@
+---
+// Every way to get a Reddit thread or subreddit into a spreadsheet, and what each leaves out.
+// The column lists are the export's public contract (src/export/csv.ts): keep them in step.
+import Base from '../layouts/Base.astro';
+import LinkCheck from '../components/LinkCheck.astro';
+import InstallCta from '../components/InstallCta.astro';
+import { href } from '../data/site';
+import settings from '../assets/shots/settings-files.webp';
+
+const CHECKED = '2026-11-21';
+const reviewed = new Date(CHECKED).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const ways = [
+  {
+    name: 'Copy and paste',
+    who: 'Everyone',
+    gets: 'The comments you expanded, as plain text.',
+    catch: 'Who replied to whom, scores and times are lost. Collapsed replies stay hidden.',
+  },
+  {
+    name: 'Request your data from Reddit',
+    who: 'Your own account',
+    gets: 'A copy of your own account data, from your Reddit settings.',
+    catch: "Only your own activity: not the other comments in a thread, not a subreddit.",
+  },
+  {
+    name: '.json at the end of the address',
+    who: 'Developers',
+    gets: "The page's data as JSON, which a script can turn into CSV.",
+    catch: 'One page at a time: "load more" comments stay unloaded. Reddit may refuse it when it sees too many requests.',
+  },
+  {
+    name: "A script with Reddit's API",
+    who: 'Developers',
+    gets: 'Whatever the script asks for.',
+    catch: 'Needs API credentials, and Reddit closed most of its free API in 2026.',
+  },
+  {
+    name: 'Threadcrate for Reddit',
+    who: 'Anyone with Chrome on a computer',
+    gets: 'A thread with its whole comment tree, a subreddit, a profile or a search, as posts.csv and comments.csv, plus JSON and Markdown.',
+    catch: 'A browser extension, so not on a phone. Big exports take minutes, at the pace Reddit allows.',
+  },
+];
+
+const postColumns = [
+  'id', 'subreddit', 'author', 'title', 'selftext', 'url', 'permalink', 'created_utc', 'created_unix',
+  'edited_utc', 'score', 'upvote_ratio', 'num_comments', 'comments_exported', 'link_flair_text',
+  'author_flair_text', 'media_type', 'media_urls', 'over_18', 'spoiler', 'locked', 'stickied', 'archived',
+  'is_self', 'distinguished', 'removal_status', 'domain', 'crosspost_parent', 'name', 'subreddit_id',
+  'author_fullname',
+];
+const commentColumns = [
+  'id', 'link_id', 'link_title', 'parent_id', 'root_comment_id', 'depth', 'path', 'author', 'is_submitter',
+  'body', 'score', 'created_utc', 'created_unix', 'edited_utc', 'distinguished', 'stickied',
+  'removal_status', 'controversiality', 'score_hidden', 'subreddit', 'permalink', 'name', 'author_fullname',
+];
+
+const pandas = `import pandas as pd
+
+comments = pd.read_csv("comments.csv")
+
+# Top-level comments answer the post; the rest answer another comment.
+top_level = comments[comments.depth == 0]
+replies = comments[comments.depth > 0]
+
+# How many direct replies each comment got.
+reply_counts = replies.groupby("parent_id").size()`;
+
+const url = new URL(Astro.url.pathname, Astro.site).toString();
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'How to export a Reddit thread or subreddit to CSV',
+  description:
+    'Every way to get a Reddit thread or subreddit into a spreadsheet, what each leaves out, and what the columns of posts.csv and comments.csv mean.',
+  datePublished: CHECKED,
+  dateModified: CHECKED,
+  inLanguage: 'en',
+  mainEntityOfPage: url,
+  publisher: { '@id': new URL('/#org', Astro.site).toString() },
+};
+---
+
+<Base
+  title="How to export a Reddit thread or subreddit to CSV – Threadcrate for Reddit"
+  description="Every way to get a Reddit thread or subreddit into a spreadsheet, what each leaves out, and what the columns of posts.csv and comments.csv mean."
+  ogTitle="How to export a Reddit thread or subreddit to CSV"
+  ogType="article"
+  jsonLd={jsonLd}
+  current="/how-to-export-reddit-to-csv/"
+>
+  <section class="wrap page-head head-split">
+    <div>
+      <h1>How to export a Reddit thread or subreddit to CSV</h1>
+      <p class="lead">
+        Reddit has no button that saves a thread or a subreddit as a spreadsheet. You can copy a
+        thread by hand, request your own data, or write a script. To get a whole thread with its
+        comment tree, or a subreddit's posts, as CSV that opens in Excel, use a browser extension
+        such as Threadcrate.
+      </p>
+      <p class="byline">By the maker of Threadcrate. Checked on {reviewed}.</p>
+    </div>
+    <LinkCheck />
+  </section>
+
+  <article class="wrap prose" style="max-width: none">
+    <div class="table-scroll">
+      <table class="policy-table">
+        <colgroup>
+          <col style="width: 22%" />
+          <col style="width: 16%" />
+          <col />
+          <col />
+        </colgroup>
+        <thead>
+          <tr>
+            <th scope="col">Way</th>
+            <th scope="col">Who</th>
+            <th scope="col">What you get</th>
+            <th scope="col">The catch</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            ways.map((w) => (
+              <tr>
+                <th scope="row">{w.name}</th>
+                <td data-label="Who">{w.who}</td>
+                <td data-label="What you get">{w.gets}</td>
+                <td data-label="The catch">{w.catch}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div style="max-width: 44em">
+      <h2>The ways without an extension</h2>
+
+      <h3>Copy and paste</h3>
+      <p>
+        Expand every "more replies" you need, select the thread and paste it into a document. It
+        works for a short thread you want to read later, but a spreadsheet gets one long column of
+        text: no authors, scores or times in their own cells, and no way to tell which comment
+        answers which.
+      </p>
+
+      <h3>Request your data from Reddit</h3>
+      <p>
+        In your Reddit account settings you can ask Reddit for a copy of the data it has about your
+        account. That's the way to keep your own posts and comments. It doesn't hold other people's
+        comments in the threads you took part in, and it can't export a subreddit.
+      </p>
+
+      <h3>Add .json to the address</h3>
+      <p>
+        Put <code>.json</code> at the end of a Reddit address and Reddit shows the page's data
+        instead of the page. A script can turn that into CSV. It holds one page of the thread: the
+        collapsed "load more comments" parts aren't in it, and fetching them is up to your script.
+        Reddit may also refuse these requests when there are too many.
+      </p>
+
+      <h3>A script with Reddit's API</h3>
+      <p>
+        Libraries such as PRAW (Python) read Reddit through its official API. You need API
+        credentials from Reddit, and Reddit closed most of its free API in 2026, so many export tools
+        built on it stopped working.
+      </p>
+
+      <h2>Export a thread or subreddit with Threadcrate</h2>
+      <p>
+        Threadcrate is a free, open-source browser extension. It reads the same pages reddit.com shows
+        you, in your own browser, so it works logged out and needs no API key.
+      </p>
+      <ol>
+        <li>Open the thread, subreddit, profile or search on reddit.com.</li>
+        <li>
+          Click Threadcrate in the toolbar, or <strong>Export</strong> next to <strong>Share</strong>{' '}
+          on a post.
+        </li>
+        <li>
+          Pick how many posts and comments. Each choice shows how long it takes. Press{' '}
+          <strong>Export</strong>.
+        </li>
+        <li>Unzip the file it saves in your Downloads folder and open <code>posts.csv</code> or <code>comments.csv</code>.</li>
+      </ol>
+      <p>
+        CSV is on by default, next to JSON and Markdown. Images and videos are off until you turn them
+        on in the settings.
+      </p>
+      <figure class="shot">
+        <img
+          src={settings.src}
+          width={settings.width}
+          height={settings.height}
+          loading="lazy"
+          decoding="async"
+          alt="Threadcrate's settings, Files in the ZIP: JSON, CSV and Markdown ticked, Images and videos not"
+        />
+      </figure>
+      <div class="cta-row" style="margin: 20px 0 0">
+        <InstallCta />
+      </div>
+
+      <h2>What's in posts.csv and comments.csv</h2>
+      <p>
+        <code>posts.csv</code> has one row per post and <code>comments.csv</code> one row per comment.
+        Field names follow Reddit's own, so code written for Reddit's data reads them too.
+      </p>
+      <ul>
+        <li>
+          <code>parent_id</code> is the post (<code>t3_…</code>) for a top-level comment and the
+          comment it answers (<code>t1_…</code>) otherwise. <code>depth</code> is 0 for top-level
+          comments, and <code>path</code> lists the ids from the top-level comment down, joined by{' '}
+          <code>/</code>.
+        </li>
+        <li>
+          <code>created_utc</code> is an ISO 8601 time in UTC, and <code>created_unix</code> the same
+          moment in seconds, for sorting.
+        </li>
+        <li>
+          Deleted and removed comments stay in as <code>[deleted]</code> and <code>[removed]</code>,
+          with <code>removal_status</code> saying which, so their replies keep their place.
+        </li>
+        <li>
+          <code>num_comments</code> is Reddit's count and <code>comments_exported</code> what the
+          export holds. Reddit's count includes removed comments it no longer shows anyone, so the two
+          can differ; <code>manifest.json</code> lists what couldn't be loaded, and why.
+        </li>
+      </ul>
+
+      <h3>posts.csv columns</h3>
+      <ul class="columns">{postColumns.map((c) => <li><code>{c}</code></li>)}</ul>
+      <h3>comments.csv columns</h3>
+      <ul class="columns">{commentColumns.map((c) => <li><code>{c}</code></li>)}</ul>
+
+      <h2>Open it in Excel or Google Sheets</h2>
+      <p>
+        The files are UTF-8 with a byte-order mark, which Excel needs to show accents and emoji
+        correctly. If a double-click puts everything in one column (Excel in some countries expects
+        semicolons), use Data › From Text/CSV and pick comma. In Google Sheets, use File › Import ›
+        Upload. Comments are written by strangers, so any cell that starts with <code>=</code>,{' '}
+        <code>+</code>, <code>-</code> or <code>@</code> gets an apostrophe in front: a spreadsheet
+        never runs a comment as a formula.
+      </p>
+
+      <h2>Rebuild the thread in pandas</h2>
+      <p>The columns are enough to put the tree back together:</p>
+      <pre><code>{pandas}</code></pre>
+      <p>
+        If you'd rather have the tree already built, <code>data.json</code> in the same ZIP has every
+        comment nested under its parent.
+      </p>
+
+      <h2>Exporting a whole subreddit</h2>
+      <p>
+        Reddit lists at most about 1,000 posts for any one sort of a subreddit, profile or search.
+        Threadcrate exports up to that from the sort you're looking at. With{' '}
+        <strong>Find more than the 1,000 posts Reddit lists</strong> on in the settings, an All export
+        reads eight lists (newest, top and controversial over several time ranges, and hot) and keeps
+        each post once. That finds several thousand posts in a big subreddit, though never every old
+        one.
+      </p>
+      <p>
+        Reddit's request limit sets the pace, so comments are the biggest choice. Top comments take one
+        request per post; all comments follow every reply, and a big thread can take hundreds of
+        requests. The popup shows the time for each choice before you start.
+      </p>
+
+      <h2>Use it responsibly</h2>
+      <p>
+        Export what you have a right to keep: your own posts, threads you take part in, research data
+        you'll handle with care. Respect Reddit's{' '}
+        <a href="https://redditinc.com/policies/user-agreement">User Agreement</a> and the people who
+        wrote the comments. See <a href={href('/privacy/')}>the privacy policy</a> for what the
+        extension does with data: nothing leaves your browser except its requests to Reddit.
+      </p>
+    </div>
+  </article>
+</Base>
