@@ -6,7 +6,7 @@ export const SHORT = 'Threadcrate';
 /** Store listings. Empty means there is no listing yet: the install buttons then say
  * "Coming soon to the Chrome Web Store" and link nowhere. Chrome only for now. */
 export const STORE = {
-  chrome: '',
+  chrome: 'https://chromewebstore.google.com/detail/nhgjbajgfmnpgodnmikmobfogdodbdgn',
 };
 
 export const LINKS = {

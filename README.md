@@ -56,10 +56,8 @@ Python and JavaScript clients, schedules, webhooks, Make, Zapier and n8n are on 
 <table align="center">
   <tr>
     <td align="center" width="300">
-      <!-- chrome-store:start (scripts/store-live.mjs links this once the listing is live) -->
-      <img src="media/readme/chrome.svg" width="48" height="48" alt=""><br><b>Chrome Web Store</b><br>
-      <sub>Chrome, Edge, Brave and other Chromium browsers. Coming soon</sub>
-      <!-- chrome-store:end -->
+      <a href="https://chromewebstore.google.com/detail/nhgjbajgfmnpgodnmikmobfogdodbdgn"><img src="media/readme/chrome.svg" width="48" height="48" alt=""><br><b>Chrome Web Store</b></a><br>
+      <sub>Chrome, Edge, Brave and other Chromium browsers</sub>
     </td>
   </tr>
 </table>
