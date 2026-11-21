@@ -56,13 +56,13 @@ Python and JavaScript clients, schedules, webhooks, Make, Zapier and n8n are on 
 <table align="center">
   <tr>
     <td align="center" width="300">
-      <img src="media/readme/chrome.svg" width="48" height="48" alt=""><br><b>Chrome Web Store</b><br>
-      <sub>Chrome, Edge, Brave and other Chromium browsers. Coming soon</sub>
+      <a href="https://chromewebstore.google.com/detail/nhgjbajgfmnpgodnmikmobfogdodbdgn"><img src="media/readme/chrome.svg" width="48" height="48" alt=""><br><b>Chrome Web Store</b></a><br>
+      <sub>Chrome, Edge, Brave and other Chromium browsers</sub>
     </td>
   </tr>
 </table>
 
-Until then, build it yourself: `pnpm install && pnpm build`, open `chrome://extensions`, turn on Developer mode and choose **Load unpacked** → `.output/chrome-mv3`. A Firefox build exists (`pnpm build:firefox`) and comes to Firefox Add-ons later. Website: [threadcrate.jaspnerd.dev](https://threadcrate.jaspnerd.dev/).
+Or build it yourself: `pnpm install && pnpm build`, open `chrome://extensions`, turn on Developer mode and choose **Load unpacked** → `.output/chrome-mv3`. A Firefox build exists (`pnpm build:firefox`) and comes to Firefox Add-ons later. Website: [threadcrate.jaspnerd.dev](https://threadcrate.jaspnerd.dev/).
 
 ## Why
 

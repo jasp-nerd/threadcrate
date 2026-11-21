@@ -7,7 +7,8 @@
 //    working while an export runs;
 //  - when everything still to do fits in what's left of this window, go at full
 //    speed and finish;
-//  - otherwise spend the budget evenly until the reset: big exports then never
+//  - when it clearly doesn't fit, spend the budget evenly until the reset, and in
+//    between (inside the margin) slow down in proportion: big exports then never
 //    stop for minutes at a time (long pauses feel worse than a steady pace, and
 //    the total time is the same, since the budget is the limit either way);
 //  - with only the reserve left, wait for the reset.
@@ -59,10 +60,15 @@ export function delayAfter(budget: Budget, rules: PacingRules, workLeft: number 
   const usable = budget.remaining - reserve;
   // With a margin: the work left is an estimate, and running out a few requests
   // short means a wait for the next window right at the end.
-  const fits =
-    workLeft === null ? budget.remaining > budget.limit / 2 : workLeft * 1.1 + 2 <= usable;
-  if (fits) return rules.minIntervalMs;
-  return Math.max(rules.minIntervalMs, budget.resetMs / usable);
+  const even = Math.max(rules.minIntervalMs, budget.resetMs / usable);
+  if (workLeft === null) return budget.remaining > budget.limit / 2 ? rules.minIntervalMs : even;
+  const need = workLeft * 1.1 + 2;
+  if (need <= usable) return rules.minIntervalMs;
+  // Between "fits with the margin" and "doesn't fit even without it", slow down in
+  // proportion. A step from full speed to an even pace would make one request more
+  // or less in the estimate the difference between finishing now and at the reset.
+  const over = Math.min(1, (need - usable) / (usable * 0.1 + 2));
+  return rules.minIntervalMs + over * (even - rules.minIntervalMs);
 }
 
 /** True when a wait of this length is for the budget, not ordinary pacing. */

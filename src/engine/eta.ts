@@ -72,8 +72,13 @@ export const FIRST_PAGE: Record<BackendName, number> = { html: 25, json: 200 };
  * comments (0.3): more threads are needed before changing this.
  */
 const PER_COMMENT: Record<BackendName, number> = { html: 0.2, json: 0.03 };
-/** How much the prior counts against observations, in comments. */
-const PRIOR_WEIGHT = 50;
+/**
+ * How much the prior counts against observations, in comments: little, since every
+ * community differs and one finished thread already says more than the prior. With
+ * more weight, a wrong prior kept the count high long enough to predict a wait for
+ * the next window that never came.
+ */
+const PRIOR_WEIGHT = 5;
 /** A thread with an unknown size counts as this many comments. */
 const UNKNOWN_THREAD = 30;
 /** Reddit's rate-limit window: ten minutes. */

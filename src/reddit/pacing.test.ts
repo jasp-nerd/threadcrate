@@ -7,6 +7,16 @@ test.each<[string, PacingRules, number, number, number | null, number]>([
   ['work that fits in the budget goes at full speed', NORMAL, 150, 400, 100, 1_000],
   // 127 usable (150 - 23 reserve), 400 s left: about 3.15 s from one send to the next.
   ['work that does not fit is spread until the reset', NORMAL, 150, 400, 1000, 400_000 / 127],
+  // Inside the margin, a pace in between: 120 needed (×1.1 + 2 = 134) against 127 usable
+  // is (134 - 127) / (12.7 + 2) = 48% of the way from 1 s to 3.15 s.
+  [
+    'work just past the margin slows down in proportion, without a jump',
+    NORMAL,
+    150,
+    400,
+    120,
+    1_000 + ((134 - 127) / 14.7) * (400_000 / 127 - 1_000),
+  ],
   ['only the reserve left: wait for the reset', NORMAL, 20, 90, 1000, 91_000],
   ['nothing left to do: no wait for a reset that does not matter', NORMAL, 20, 500, 0, 1_000],
   ['fast keeps a smaller reserve and shorter gaps', FAST, 20, 90, 10, FAST.minIntervalMs],
